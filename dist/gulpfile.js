@@ -31,4 +31,5 @@ function jscopy() {
 
 exports.css = cssmin;
 exports.html = indexmin;
-exports.default = parallel(cssmin, indexmin, jscopy);
+// exports.default = parallel(cssmin, indexmin, jscopy);
+exports.default = parallel(cssmin, indexmin);
