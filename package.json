@@ -8,6 +8,8 @@
     "fs": "^0.0.1-security",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",
+    "gulp-css": "^0.1.0",
+    "gulp-htmlmin": "^5.0.1",
     "gulp-notify": "^3.2.0",
     "gulp-plumber": "^1.2.1",
     "gulp-rename": "^2.0.0",
