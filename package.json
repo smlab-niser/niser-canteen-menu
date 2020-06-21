@@ -1,0 +1,45 @@
+{
+  "name": "canteen-menu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "browser-sync": "^2.26.7",
+    "fs": "^0.0.1-security",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-notify": "^3.2.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^4.1.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.5",
+    "typescript-register": "^1.1.0",
+    "typescript-require": "^0.2.10"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.12",
+    "gulp-htmlhint": "^3.0.1",
+    "gulp-prettify": "^0.5.0",
+    "gulp-pug": "^4.0.1",
+    "gulp-util": "^3.0.8",
+    "kind-of": "^6.0.3",
+    "minimist": "^1.2.5",
+    "node-sass-package-importer": "^5.3.2",
+    "normalize.css": "^8.0.1"
+  },
+  "scripts": {
+    "start": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abhishek-deshmukh/canteen-menu.git"
+  },
+  "author": "Abhishek Anil Deshmukh",
+  "license": "MIT",
+  "homepage": "https://github.com/abhishek-deshmukh/canteen-menu#readme",
+  "browserslist": [
+    "last 2 version"
+  ]
+}
