@@ -354,18 +354,15 @@ body {
   text-align: center;
   color: #836d59;
   font-family: 'Fira Sans';
-  /* the heading */
-  /* the swipe view thingy*/
-  /* the card */
-  /* footer */
 }
 
-body header {
+/* the heading */
+header {
   font-size: 25px;
   padding-top: 10px;
 }
 
-body .meal {
+.meal {
   display: block;
   height: 20px;
   background-color: transparent;
@@ -376,7 +373,8 @@ body .meal {
   line-height: 1.7;
 }
 
-body .swipe-view {
+/* the swipe view thingy*/
+.swipe-view {
   display: grid;
   grid-template-columns: repeat(4, 100%);
   will-change: transform;
@@ -392,7 +390,7 @@ body .swipe-view {
   -webkit-overflow-scrolling: touch;
 }
 
-body .swipe-view section {
+section {
   width: 100vw;
   height: 100%;
   -webkit-box-flex: 0;
@@ -401,7 +399,8 @@ body .swipe-view section {
   scroll-snap-align: start;
 }
 
-body .canteen-card {
+/* the card */
+.canteen-card {
   display: inline-block;
   width: 80vw;
   background: white;
@@ -412,7 +411,7 @@ body .canteen-card {
   border-radius: 20px;
 }
 
-body .canteen-card .canteen-name {
+.canteen-name {
   color: #554a40;
   font-size: 28px;
   line-height: 1.3;
@@ -421,7 +420,7 @@ body .canteen-card .canteen-name {
   font-style: normal;
 }
 
-body .canteen-card .timestamp {
+.timestamp {
   color: #a8988a;
   font-size: 15px;
   font-style: normal;
@@ -430,7 +429,7 @@ body .canteen-card .timestamp {
   font-weight: 500;
 }
 
-body .canteen-card .menu {
+.menu {
   color: #7b7992;
   line-height: 1.3;
   letter-spacing: 0.032em;
@@ -439,11 +438,12 @@ body .canteen-card .menu {
   font-style: normal;
 }
 
-body footer {
+/* footer */
+footer {
   color: #3e2828;
   margin-bottom: 10px;
 }
 
-body footer a {
+footer a {
   color: #3e2828;
 }

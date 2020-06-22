@@ -32,7 +32,8 @@
     "normalize.css": "^8.0.1"
   },
   "scripts": {
-    "start": "gulp"
+    "start": "gulp",
+    "build": "gulp build && cd dist && tar -cvzf mini.tar.gz mini && tar -cvzf pretty.tar.gz pretty"
   },
   "repository": {
     "type": "git",

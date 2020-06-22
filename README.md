@@ -15,17 +15,8 @@ $ npm install
 
 3) Generate output files.
 ```bash
-$ gulp build
+$ npm run build
 ```
-
-The pretty files will be in the `/dist/assets` directory, these are deployable but can be optimised.
-
-4) Minify them run this command in the `dist` directory
-```bash
-$ gulp
-```
-
-The minified and deployable files will be in `/dist/mini`
 
 ## Architecture
 
