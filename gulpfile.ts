@@ -14,6 +14,7 @@ const prettify = require('gulp-prettify');
 const htmlhint = require('gulp-htmlhint');
 const min_html = require('gulp-htmlmin');
 const min_css = require('gulp-css');
+const uglify = require('gulp-uglify');
 const PUBLIC_PATH = 'dist/pretty';
 
 const PATHS = {
@@ -31,8 +32,8 @@ const PATHS = {
   },
   statics: {
     src: './src/static/**',
-    dest: './dist/pretty/static'
-  }
+    dest: './dist/pretty/static',
+  },
 };
 const MINI_PATHS = {
   html: {
@@ -48,9 +49,9 @@ const MINI_PATHS = {
     dest: './dist/mini/js',
   },
   statics: {
-    src: PATHS.statics.dest + "/**",
-    dest: './dist/mini/static'
-  }
+    src: PATHS.statics.dest + '/**',
+    dest: './dist/mini/static',
+  },
 };
 
 // methods
@@ -131,7 +132,7 @@ function ts() {
   return src(PATHS.scripts.src)
     .pipe(
       typescript({
-        target: 'ES6',
+        target: 'ES3',
       }),
     )
     .js.pipe(dest(PATHS.scripts.dest));
@@ -139,7 +140,9 @@ function ts() {
 
 // javascript
 function js() {
-  return src(MINI_PATHS.scripts.src).pipe(dest(MINI_PATHS.scripts.dest));
+  return src(MINI_PATHS.scripts.src)
+    .pipe(uglify())
+    .pipe(dest(MINI_PATHS.scripts.dest));
 }
 
 // static

@@ -32,9 +32,9 @@ function move() {
 // @ts-ignore
 axios
     .get('https://spreadsheets.google.com/feeds/cells/1CBEmRrqH8W-wsNDHq7G5_-vMTJvFYbt-h6NsEViMLHY/1/public/full?alt=json')
-    .then(response => {
+    .then(function (response) {
     //entries with garbage
-    const entries_wg = response.data.feed.entry;
+    var entries_wg = response.data.feed.entry;
     //cleaning
     var entries = clean_entries(entries_wg);
     // loading data into the page
@@ -44,17 +44,17 @@ axios
 });
 // cleaning up entries
 function clean_entries(entries_wg) {
-    return entries_wg.map(entry => {
+    return entries_wg.map(function (entry) {
         return {
             col: entry['gs$cell']['col'],
             row: entry['gs$cell']['row'],
-            value: entry['content']['$t'],
+            value: entry['content']['$t']
         };
     });
 }
 // function to directly get data from it like an array
 function table(entries, col, row) {
-    return entries.filter(entry => {
+    return entries.filter(function (entry) {
         return entry['col'] == col.toString() && entry['row'] == row.toString();
     })[0]['value'];
 }
@@ -62,8 +62,8 @@ function table(entries, col, row) {
 function load_into_html(entries) {
     var sections = document.getElementsByTagName('section');
     var noof_canteens = entries.length / 6 - 1;
-    for (let section in sections) {
-        for (let i = 0; i < noof_canteens; i++) {
+    for (var section in sections) {
+        for (var i = 0; i < noof_canteens; i++) {
             if (typeof sections[section] == 'object') {
                 sections[section].innerHTML +=
                     '<div class=canteen-card><span class=canteen-name>' +
