@@ -341,33 +341,42 @@ template {
   display: none;
 }
 
+@font-face {
+  font-family: 'Fira Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url(../static/fonts/FiraSans-Regular.otf);
+}
+
 body {
   background-image: linear-gradient(147deg, #ead2af 0%, #836d59 74%);
   min-height: 100vh;
   text-align: center;
   color: #836d59;
   font-family: 'Fira Sans';
+  /* the heading */
+  /* the swipe view thingy*/
+  /* the card */
+  /* footer */
 }
 
-/* the heading and the form */
-header {
+body header {
   font-size: 25px;
   padding-top: 10px;
 }
 
-.meal {
+body .meal {
   display: block;
   height: 20px;
   background-color: transparent;
   color: #836d59;
-  font-size: 16px;
-  letter-spacing: 0.02em;
-  line-height: 2.5;
   font-weight: 400;
+  font-size: 19px;
+  letter-spacing: 0.036em;
+  line-height: 1.7;
 }
 
-/* the swipe view thingy*/
-.swipe-view {
+body .swipe-view {
   display: grid;
   grid-template-columns: repeat(4, 100%);
   will-change: transform;
@@ -383,7 +392,7 @@ header {
   -webkit-overflow-scrolling: touch;
 }
 
-.swipe-view section {
+body .swipe-view section {
   width: 100vw;
   height: 100%;
   -webkit-box-flex: 0;
@@ -392,8 +401,7 @@ header {
   scroll-snap-align: start;
 }
 
-/* the card */
-.canteen-card {
+body .canteen-card {
   display: inline-block;
   width: 80vw;
   background: white;
@@ -404,7 +412,7 @@ header {
   border-radius: 20px;
 }
 
-.canteen-card .canteen-code {
+body .canteen-card .canteen-name {
   color: #554a40;
   font-size: 28px;
   line-height: 1.3;
@@ -413,7 +421,7 @@ header {
   font-style: normal;
 }
 
-.canteen-card .canteen-name {
+body .canteen-card .timestamp {
   color: #a8988a;
   font-size: 15px;
   font-style: normal;
@@ -422,7 +430,7 @@ header {
   font-weight: 500;
 }
 
-.canteen-card .menu {
+body .canteen-card .menu {
   color: #7b7992;
   line-height: 1.3;
   letter-spacing: 0.032em;
@@ -431,12 +439,11 @@ header {
   font-style: normal;
 }
 
-/* footer */
-footer {
+body footer {
   color: #3e2828;
   margin-bottom: 10px;
 }
 
-footer a {
+body footer a {
   color: #3e2828;
 }

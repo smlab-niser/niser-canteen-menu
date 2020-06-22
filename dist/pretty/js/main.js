@@ -1,4 +1,3 @@
-window.onload = move;
 function move() {
     //moving to section according to time
     var hours = new Date().getHours();
@@ -40,6 +39,8 @@ axios
     var entries = clean_entries(entries_wg);
     // loading data into the page
     load_into_html(entries);
+    // moving to the relevant location
+    move();
 });
 // cleaning up entries
 function clean_entries(entries_wg) {
@@ -60,16 +61,19 @@ function table(entries, col, row) {
 //function for loading the data into html
 function load_into_html(entries) {
     var sections = document.getElementsByTagName('section');
-    for (let j = 0; j < 4; j++) {
-        var canteen_cards = sections[j].getElementsByClassName('canteen-card');
-        for (let i = 0; i < 4; i++) {
-            // the hostel name
-            canteen_cards[i].getElementsByClassName('canteen-code')[0].innerHTML = table(entries, 2, i + 2);
-            // the menu
-            canteen_cards[i].getElementsByClassName('menu')[0].innerHTML = table(entries, j + 3, i + 2);
-            // the timestamp
-            canteen_cards[i].getElementsByClassName('canteen-name')[0].innerHTML =
-                ' last updated on ' + table(entries, 1, i + 2);
+    var noof_canteens = entries.length / 6 - 1;
+    for (let section in sections) {
+        for (let i = 0; i < noof_canteens; i++) {
+            if (typeof sections[section] == 'object') {
+                sections[section].innerHTML +=
+                    '<div class=canteen-card><span class=canteen-name>' +
+                        table(entries, 2, i + 2) +
+                        '</span><br /><span class=timestamp>' +
+                        table(entries, 1, i + 2) +
+                        '</span><br /><br/><span class=menu>' +
+                        table(entries, parseInt(section) + 2, i + 2) +
+                        '</span></div>';
+            }
         }
     }
 }
