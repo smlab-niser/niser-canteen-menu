@@ -1,7 +1,6 @@
 function move() {
     //moving to section according to time
     var hours = new Date().getHours();
-    hours = 8;
     var section_no = 0;
     var sections = document.getElementsByTagName('section');
     if (hours >= 22 || hours < 10) {

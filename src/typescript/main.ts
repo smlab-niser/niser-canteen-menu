@@ -1,7 +1,6 @@
 function move() {
   //moving to section according to time
   var hours: Number = new Date().getHours();
-  hours = 8;
   var section_no: Number = 0;
   var sections = document.getElementsByTagName('section');
 
