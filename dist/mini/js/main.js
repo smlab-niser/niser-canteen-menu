@@ -1,6 +1,7 @@
 function move() {
     //moving to section according to time
     var hours = new Date().getHours();
+    hours = 8;
     var section_no = 0;
     var sections = document.getElementsByTagName('section');
     if (hours >= 22 || hours < 10) {
@@ -71,7 +72,7 @@ function load_into_html(entries) {
                         '</span><br /><span class=timestamp>' +
                         table(entries, 1, i + 2) +
                         '</span><br /><br/><span class=menu>' +
-                        table(entries, parseInt(section) + 2, i + 2) +
+                        table(entries, parseInt(section) + 3, i + 2) +
                         '</span></div>';
             }
         }
