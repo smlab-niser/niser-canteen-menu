@@ -1,23 +1,92 @@
-function setToReload() {
-  const hours: number = new Date().getHours();
-  var milliSecsToWait: number = 0;
+// @ts-ignore
+axios
+  .get(
+    'https://spreadsheets.google.com/feeds/cells/1CBEmRrqH8W-wsNDHq7G5_-vMTJvFYbt-h6NsEViMLHY/1/public/full?alt=json',
+  )
+  .then(response => {
+    //entries with garbage
+    const entries_wg = response.data.feed.entry;
 
-  if (hours < 9) {
-    milliSecsToWait = (9 - hours) * 60 * 60 * 1000;
-  } else if (hours < 14) {
-    milliSecsToWait = (14 - hours) * 60 * 60 * 1000;
-  } else if (hours < 19) {
-    milliSecsToWait = (19 - hours) * 60 * 60 * 1000;
-  } else {
-    milliSecsToWait = (24 - hours + 9) * 60 * 60 * 1000;
-  }
-  setTimeout(() => {
-    history.go();
-  }, milliSecsToWait);
+    //cleaning
+    var entries = clean_entries(entries_wg);
+
+    // loading data into the page
+    load_into_html(entries);
+
+    // moving to the relevant meal
+    move();
+
+    // set to reload after a certain amount of time
+    setToReload();
+  });
+
+// cleaning up entries
+function clean_entries(entries_wg) {
+  return entries_wg.map(entry => {
+    // time case
+    if (entry['gs$cell']['col'] == '1' && entry['gs$cell']['row'] != '1') {
+      var date_time: string = entry['content']['$t'];
+      var now = new Date();
+      var today =
+        (now.getMonth() + 1).toString() +
+        '/' +
+        now.getDate().toString() +
+        '/' +
+        now.getFullYear().toString();
+      now.setDate(now.getDate() - 1); // going a day back
+      var yesterday =
+        (now.getMonth() + 1).toString() +
+        '/' +
+        now.getDate().toString() +
+        '/' +
+        now.getFullYear().toString();
+      var date: string = date_time.slice(0, 9);
+      if (date == today) {
+        entry['content']['$t'] =
+          'today ' + date_time.slice(date_time.indexOf(' '));
+      } else if (date == '2') {
+        entry['content']['$t'] =
+          'yesterday ' + date_time.slice(date_time.indexOf(' '));
+      }
+    }
+
+    return {
+      col: entry['gs$cell']['col'],
+      row: entry['gs$cell']['row'],
+      value: entry['content']['$t'],
+    };
+  });
 }
 
+//function for loading the data into html
+function load_into_html(entries) {
+  var sections = document.getElementsByTagName('section');
+  var noof_canteens = entries.length / 6 - 1;
+  for (let section in sections) {
+    for (let i = 0; i < noof_canteens; i++) {
+      if (typeof sections[section] == 'object') {
+        sections[section].innerHTML +=
+          '<div class=canteen-card><span class=canteen-name>' +
+          table(entries, 2, i + 2) +
+          '</span><br /><span class=timestamp><img class="icon" src="./static/icons/approve-and-update.png"/>' +
+          table(entries, 1, i + 2) +
+          '</span><br /><br/><span class=menu>' +
+          table(entries, parseInt(section) + 3, i + 2) +
+          '</span></div>';
+      }
+    }
+  }
+}
+
+// function to directly get data from it like an array
+function table(entries, col, row) {
+  return entries.filter(entry => {
+    return entry['col'] == col.toString() && entry['row'] == row.toString();
+  })[0]['value'];
+}
+
+//moving to section according to time
 function move() {
-  //moving to section according to time
   var hours: number = new Date().getHours();
   var section_no: number = 0;
   var sections = document.getElementsByTagName('section');
@@ -46,79 +115,21 @@ function move() {
   sections[3].style['margin-left'] = location;
 }
 
-// filling in data
-// @ts-ignore
-axios
-  .get(
-    'https://spreadsheets.google.com/feeds/cells/1CBEmRrqH8W-wsNDHq7G5_-vMTJvFYbt-h6NsEViMLHY/1/public/full?alt=json',
-  )
-  .then(response => {
-    //entries with garbage
-    const entries_wg = response.data.feed.entry;
+// function to reload on appropriate times
+function setToReload() {
+  const hours: number = new Date().getHours();
+  var milliSecsToWait: number = 0;
 
-    //cleaning
-    var entries = clean_entries(entries_wg);
-
-    // loading data into the page
-    load_into_html(entries);
-
-    // moving to the relevant location
-    move();
-
-    // set to reload after a certain amount of time
-    setToReload();
-  });
-
-// cleaning up entries
-function clean_entries(entries_wg) {
-  return entries_wg.map(entry => {
-    // time case
-    if (entry['gs$cell']['col'] == '1' && entry['gs$cell']['row'] != '1') {
-      var date_time: string = entry['content']['$t'];
-      var now = new Date();
-      var today = (now.getMonth()+1).toString() + "/" + now.getDate().toString() + "/" + now.getFullYear().toString()
-      now.setDate(now.getDate() - 1) // going a day back
-      var yesterday = (now.getMonth()+1).toString() + "/" + now.getDate().toString() + "/" + now.getFullYear().toString()
-      var date: string = date_time.slice(0, 9);
-      if (date == today) {
-        entry['content']['$t'] = "today " + date_time.slice(date_time.indexOf(" "),);
-      } else if (date == '2') {
-        entry['content']['$t'] = "yesterday " + date_time.slice(date_time.indexOf(" "),);
-      }
-    }
-
-    // other cases
-    return {
-      col: entry['gs$cell']['col'],
-      row: entry['gs$cell']['row'],
-      value: entry['content']['$t'],
-    };
-  });
-}
-
-// function to directly get data from it like an array
-function table(entries, col, row) {
-  return entries.filter(entry => {
-    return entry['col'] == col.toString() && entry['row'] == row.toString();
-  })[0]['value'];
-}
-
-//function for loading the data into html
-function load_into_html(entries) {
-  var sections = document.getElementsByTagName('section');
-  var noof_canteens = entries.length / 6 - 1;
-  for (let section in sections) {
-    for (let i = 0; i < noof_canteens; i++) {
-      if (typeof sections[section] == 'object') {
-        sections[section].innerHTML +=
-          '<div class=canteen-card><span class=canteen-name>' +
-          table(entries, 2, i + 2) +
-          '</span><br /><span class=timestamp>Updated ' +
-          table(entries, 1, i + 2) +
-          '</span><br /><br/><span class=menu>' +
-          table(entries, parseInt(section) + 3, i + 2) +
-          '</span></div>';
-      }
-    }
+  if (hours < 9) {
+    milliSecsToWait = (9 - hours) * 60 * 60 * 1000;
+  } else if (hours < 14) {
+    milliSecsToWait = (14 - hours) * 60 * 60 * 1000;
+  } else if (hours < 19) {
+    milliSecsToWait = (19 - hours) * 60 * 60 * 1000;
+  } else {
+    milliSecsToWait = (24 - hours + 9) * 60 * 60 * 1000;
   }
+  setTimeout(() => {
+    history.go();
+  }, milliSecsToWait);
 }

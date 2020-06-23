@@ -411,6 +411,11 @@ section {
   border-radius: 20px;
 }
 
+.icon {
+  height: 15px;
+  margin-right: 5px;
+}
+
 .canteen-name {
   color: #554a40;
   font-size: 28px;
