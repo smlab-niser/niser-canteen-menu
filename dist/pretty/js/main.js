@@ -31,7 +31,7 @@ function clean_entries(entries_wg) {
                 now.getDate().toString() +
                 '/' +
                 now.getFullYear().toString();
-            var date = date_time.slice(0, 9);
+            var date = date_time.slice(0, date_time.indexOf(" ")).trim();
             if (date == today) {
                 entry['content']['$t'] =
                     'today ' + date_time.slice(date_time.indexOf(' '));
@@ -80,22 +80,18 @@ function move() {
     var sections = document.getElementsByTagName('section');
     if (hours >= 22 || hours < 10) {
         // breakfast case
-        console.log('breakfast');
     }
     else if (hours >= 10 && hours < 14) {
         // lunch case
         section_no = 1;
-        console.log('lunch');
     }
     else if (hours >= 14 && hours < 18) {
         // snacks case
         section_no = 2;
-        console.log('snacks');
     }
     else {
         // dinner case
         section_no = 3;
-        console.log('dinner');
     }
     var location = '-' + section_no.toString() + '00vw';
     sections[0].style['margin-left'] = location;
