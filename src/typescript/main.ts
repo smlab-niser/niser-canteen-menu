@@ -40,7 +40,7 @@ function clean_entries(entries_wg) {
         now.getDate().toString() +
         '/' +
         now.getFullYear().toString();
-      var date: string = date_time.slice(0, date_time.indexOf(" ")).trim();
+      var date: string = date_time.slice(0, date_time.indexOf(' ')).trim();
       if (date == today) {
         entry['content']['$t'] =
           'today ' + date_time.slice(date_time.indexOf(' '));
@@ -128,4 +128,41 @@ function setToReload() {
   setTimeout(() => {
     history.go();
   }, milliSecsToWait);
+}
+
+// Dark theme handling
+const theme = localStorage.getItem('theme');
+if (theme === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+}
+
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue(
+  'content',
+);
+
+if (theme === 'dark') {
+  document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-light.svg">';
+} else if (theme === 'light') {
+  document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-dark.svg">';
+} else if (userPrefers === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  window.localStorage.setItem('theme', 'dark');
+  document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-light.svg">';
+} else {
+  document.documentElement.setAttribute('data-theme', 'light');
+  window.localStorage.setItem('theme', 'light');
+  document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-dark.svg">';
+}
+
+function modeSwitcher() {
+  let currentMode = document.documentElement.getAttribute('data-theme');
+  if (currentMode === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    window.localStorage.setItem('theme', 'light');
+    document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-dark.svg">';
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    window.localStorage.setItem('theme', 'dark');
+  document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-light.svg">';
+  }
 }

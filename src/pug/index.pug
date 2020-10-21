@@ -5,6 +5,8 @@ block title
 
 block append body
   header NISER | Canteen Menu
+    button#theme-toggle(onclick="modeSwitcher()")
+      img(src="./static/icons/theme-toggle.svg")
   main.swipe-view
     section#breakfast
       div.meal Breakfast
