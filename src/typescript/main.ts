@@ -1,88 +1,78 @@
-// @ts-ignore
-axios
-  .get(
-    'https://spreadsheets.google.com/feeds/cells/1CBEmRrqH8W-wsNDHq7G5_-vMTJvFYbt-h6NsEViMLHY/1/public/full?alt=json',
-  )
-  .then(response => {
-    //entries with garbage
-    const entries_wg = response.data.feed.entry;
-
-    //cleaning
-    var entries = clean_entries(entries_wg);
-
-    // loading data into the page
-    load_into_html(entries);
-
-    // moving to the relevant meal
-    move();
-
-    // set to reload after a certain amount of time
-    setToReload();
-  });
-
-// cleaning up entries
-function clean_entries(entries_wg) {
-  return entries_wg.map(entry => {
-    // time case
-    if (entry['gs$cell']['col'] == '1' && entry['gs$cell']['row'] != '1') {
-      var date_time: string = entry['content']['$t'];
-      var now = new Date();
-      var today =
-        (now.getMonth() + 1).toString() +
-        '/' +
-        now.getDate().toString() +
-        '/' +
-        now.getFullYear().toString();
-      now.setDate(now.getDate() - 1); // going a day back
-      var yesterday =
-        (now.getMonth() + 1).toString() +
-        '/' +
-        now.getDate().toString() +
-        '/' +
-        now.getFullYear().toString();
-      var date: string = date_time.slice(0, date_time.indexOf(' ')).trim();
-      if (date == today) {
-        entry['content']['$t'] =
-          'today ' + date_time.slice(date_time.indexOf(' '));
-      } else if (date == '2') {
-        entry['content']['$t'] =
-          'yesterday ' + date_time.slice(date_time.indexOf(' '));
-      }
-    }
-
-    return {
-      col: entry['gs$cell']['col'],
-      row: entry['gs$cell']['row'],
-      value: entry['content']['$t'],
-    };
-  });
+const csvLink = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpgPFjsVbVak8MuXxOYEV8ezmsXC38Ki13xHcGwVt3YbFRoRSKwiRemMk9lCGOKRsDCrlYtD2ePg7V/pub?output=csv';
+var request: any;
+if(window.XMLHttpRequest){
+  request = new XMLHttpRequest();
+}else{
+  request = new ActiveXObject("Microsoft.XMLHTTP");
 }
+const loading = true;
+request.open('GET', csvLink, true);
+request.send();
+request.onload = function (e) {
+  if (request.readyState === 4) {
+    if (request.status === 200) {
+      const lines = request.responseText.split("\r");
+      for (const line of lines.slice(1)) {
+        // Parsing the mess of a CSV file
+        const rows = line.split("\",\"");
+        var time = rows[0].split(",")[0].replace("\"", "").replace("\n", "").split(" ");
+        time = make_date_friendly(time[0]) + " " + time[1];
+        const canteen = rows[0].split(",")[1].replace("\"", "");
+        const breakfast = String(rows[0].split(",").slice(2)).replace("\"", "");
+        const lunch = rows[1].replace("\"", "");
+        const snacks = rows[2].replace("\"", "");
+        const dinner = rows[3].replace("\"", "");
 
-//function for loading the data into html
-function load_into_html(entries) {
-  var sections = document.getElementsByTagName('section');
-  var noof_canteens = entries.length / 6 - 1;
-  for (let section in sections) {
-    for (let i = 0; i < noof_canteens; i++) {
-      if (typeof sections[section] == 'object') {
-        sections[section].innerHTML +=
-          '<div class=canteen-card><span class=canteen-name>' +
-          table(entries, 2, i + 2) +
-          '</span><br /><span class=timestamp><img class="icon" src="./static/icons/approve-and-update.png"/>' +
-          table(entries, 1, i + 2) +
-          '</span><br /><br/><span class=menu>' +
-          table(entries, parseInt(section) + 3, i + 2) +
-          '</span></div>';
+        addCanteen(time, canteen, [breakfast, lunch, snacks, dinner]);
       }
+
+      // moving to the relevant meal
+      move();
+      // set to reload after a certain amount of time
+      setToReload();
+    } else {
+      console.error(request.statusText);
     }
   }
+};
+
+function make_date_friendly(date: string) {
+  var now = new Date();
+  var today =
+    (now.getMonth() + 1).toString() +
+    '/' +
+    now.getDate().toString() +
+    '/' +
+    now.getFullYear().toString();
+  now.setDate(now.getDate() - 1); // going a day back
+  var yesterday =
+    (now.getMonth() + 1).toString() +
+    '/' +
+    now.getDate().toString() +
+    '/' +
+    now.getFullYear().toString();
+  if (date == today) {
+    return 'Today';
+  } else if (date == yesterday) {
+    return 'Yesterday';
+  }
+  return date;
 }
 
-// function to directly get data from it like an array
-function table(entries, col, row) {
-  return entries.filter(entry => {
-    return entry['col'] == col.toString() && entry['row'] == row.toString();
-  })[0]['value'];
+function addCanteen(time: String, canteen: String, meals: String[]) {
+  var sections = document.getElementsByTagName('section');
+  for (let section in sections) {
+    if (typeof sections[section] == 'object') {
+      sections[section].innerHTML +=
+        '<div class=canteen-card><span class=canteen-name>' +
+        canteen +
+        '</span><br /><span class=timestamp>' +
+        time +
+        '</span><br /><br/><span class=menu>' +
+        meals[section] +
+        '</span></div>';
+    }
+  }
 }
 
 //moving to section according to time
@@ -128,41 +118,4 @@ function setToReload() {
   setTimeout(() => {
     history.go();
   }, milliSecsToWait);
-}
-
-// Dark theme handling
-const theme = localStorage.getItem('theme');
-if (theme === 'dark') {
-  document.documentElement.setAttribute('data-theme', 'dark');
-}
-
-const userPrefers = getComputedStyle(document.documentElement).getPropertyValue(
-  'content',
-);
-
-if (theme === 'dark') {
-  document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-light.svg">';
-} else if (theme === 'light') {
-  document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-dark.svg">';
-} else if (userPrefers === 'dark') {
-  document.documentElement.setAttribute('data-theme', 'dark');
-  window.localStorage.setItem('theme', 'dark');
-  document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-light.svg">';
-} else {
-  document.documentElement.setAttribute('data-theme', 'light');
-  window.localStorage.setItem('theme', 'light');
-  document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-dark.svg">';
-}
-
-function modeSwitcher() {
-  let currentMode = document.documentElement.getAttribute('data-theme');
-  if (currentMode === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'light');
-    window.localStorage.setItem('theme', 'light');
-    document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-dark.svg">';
-  } else {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    window.localStorage.setItem('theme', 'dark');
-  document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-light.svg">';
-  }
 }

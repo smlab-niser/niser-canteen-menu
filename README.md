@@ -20,26 +20,13 @@ $ npm run build
 
 ## Architecture
 
-#### Libraries used during run time
-
-- [axios](https://github.com/axios/axios) | [source](https://unpkg.com/axios/dist/axios.min.js)
-
-the only other request is to the Google sheets API which is discussed [here](#getting-the-data-from-the-google-sheet-to-the-json)
-
 #### Sequence Diagram
 
 <img src="static/sequence_diagram.png" width="100%">
 
-#### Getting the data from the Google sheet to the JSON
+Replace JSON with CSV.
 
-Google Sheet share link: `https://docs.google.com/spreadsheets/d/1CBEmRrqH8W-wsNDHq7G5_-vMTJvFYbt-h6NsEViMLHY/edit?usp=sharing`
-
-The Google Sheet code: `1CBEmRrqH8W-wsNDHq7G5_-vMTJvFYbt-h6NsEViMLHY`
-
-Link to the JSON of the Google Sheet: `https://spreadsheets.google.com/feeds/cells/1CBEmRrqH8W-wsNDHq7G5_-vMTJvFYbt-h6NsEViMLHY/1/public/full?alt=json`
-
-reference: [freecodecamp](https://www.freecodecamp.org/news/cjn-google-sheets-as-json-endpoint/)
-
+Published the page to internet and get the link for CSV.
 
 ## Development
 

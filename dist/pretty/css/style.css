@@ -348,18 +348,7 @@ template {
   src: url(../static/fonts/FiraSans-Regular.otf);
 }
 
-html,
-html[data-theme='light'] {
-  --main-background-color: linear-gradient(147deg, #ead2af 0%, #836d59 74%);
-  --card-background: white;
-  --canteen-color: #554a40;
-  --dark-text-color: #836d59;
-  --timestamp-color: #a8988a;
-  --menu-color: #7b7992;
-  --footer-color: #3e2828;
-}
-
-html[data-theme='dark'] {
+html {
   --main-background-color: linear-gradient(147deg, #282a36 0%, #383a59 74%);
   --card-background: #282a36;
   --canteen-color: #bd93f9;
@@ -367,12 +356,6 @@ html[data-theme='dark'] {
   --timestamp-color: #6272a4;
   --menu-color: #f8f8f2;
   --footer-color: #ff79c6;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    content: "dark";
-  }
 }
 
 body {

@@ -1,77 +1,76 @@
-// @ts-ignore
-axios
-    .get('https://spreadsheets.google.com/feeds/cells/1CBEmRrqH8W-wsNDHq7G5_-vMTJvFYbt-h6NsEViMLHY/1/public/full?alt=json')
-    .then(function (response) {
-    //entries with garbage
-    var entries_wg = response.data.feed.entry;
-    //cleaning
-    var entries = clean_entries(entries_wg);
-    // loading data into the page
-    load_into_html(entries);
-    // moving to the relevant meal
-    move();
-    // set to reload after a certain amount of time
-    setToReload();
-});
-// cleaning up entries
-function clean_entries(entries_wg) {
-    return entries_wg.map(function (entry) {
-        // time case
-        if (entry['gs$cell']['col'] == '1' && entry['gs$cell']['row'] != '1') {
-            var date_time = entry['content']['$t'];
-            var now = new Date();
-            var today = (now.getMonth() + 1).toString() +
-                '/' +
-                now.getDate().toString() +
-                '/' +
-                now.getFullYear().toString();
-            now.setDate(now.getDate() - 1); // going a day back
-            var yesterday = (now.getMonth() + 1).toString() +
-                '/' +
-                now.getDate().toString() +
-                '/' +
-                now.getFullYear().toString();
-            var date = date_time.slice(0, date_time.indexOf(' ')).trim();
-            if (date == today) {
-                entry['content']['$t'] =
-                    'today ' + date_time.slice(date_time.indexOf(' '));
-            }
-            else if (date == '2') {
-                entry['content']['$t'] =
-                    'yesterday ' + date_time.slice(date_time.indexOf(' '));
-            }
-        }
-        return {
-            col: entry['gs$cell']['col'],
-            row: entry['gs$cell']['row'],
-            value: entry['content']['$t']
-        };
-    });
+var csvLink = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpgPFjsVbVak8MuXxOYEV8ezmsXC38Ki13xHcGwVt3YbFRoRSKwiRemMk9lCGOKRsDCrlYtD2ePg7V/pub?output=csv';
+var request;
+if (window.XMLHttpRequest) {
+    request = new XMLHttpRequest();
 }
-//function for loading the data into html
-function load_into_html(entries) {
-    var sections = document.getElementsByTagName('section');
-    var noof_canteens = entries.length / 6 - 1;
-    for (var section in sections) {
-        for (var i = 0; i < noof_canteens; i++) {
-            if (typeof sections[section] == 'object') {
-                sections[section].innerHTML +=
-                    '<div class=canteen-card><span class=canteen-name>' +
-                        table(entries, 2, i + 2) +
-                        '</span><br /><span class=timestamp><img class="icon" src="./static/icons/approve-and-update.png"/>' +
-                        table(entries, 1, i + 2) +
-                        '</span><br /><br/><span class=menu>' +
-                        table(entries, parseInt(section) + 3, i + 2) +
-                        '</span></div>';
+else {
+    request = new ActiveXObject("Microsoft.XMLHTTP");
+}
+var loading = true;
+request.open('GET', csvLink, true);
+request.send();
+request.onload = function (e) {
+    if (request.readyState === 4) {
+        if (request.status === 200) {
+            var lines = request.responseText.split("\r");
+            for (var _i = 0, _a = lines.slice(1); _i < _a.length; _i++) {
+                var line = _a[_i];
+                // Parsing the mess of a CSV file
+                var rows = line.split("\",\"");
+                var time = rows[0].split(",")[0].replace("\"", "").replace("\n", "").split(" ");
+                time = make_date_friendly(time[0]) + " " + time[1];
+                var canteen = rows[0].split(",")[1].replace("\"", "");
+                var breakfast = String(rows[0].split(",").slice(2)).replace("\"", "");
+                var lunch = rows[1].replace("\"", "");
+                var snacks = rows[2].replace("\"", "");
+                var dinner = rows[3].replace("\"", "");
+                addCanteen(time, canteen, [breakfast, lunch, snacks, dinner]);
             }
+            // moving to the relevant meal
+            move();
+            // set to reload after a certain amount of time
+            setToReload();
+        }
+        else {
+            console.error(request.statusText);
         }
     }
+};
+function make_date_friendly(date) {
+    var now = new Date();
+    var today = (now.getMonth() + 1).toString() +
+        '/' +
+        now.getDate().toString() +
+        '/' +
+        now.getFullYear().toString();
+    now.setDate(now.getDate() - 1); // going a day back
+    var yesterday = (now.getMonth() + 1).toString() +
+        '/' +
+        now.getDate().toString() +
+        '/' +
+        now.getFullYear().toString();
+    if (date == today) {
+        return 'Today';
+    }
+    else if (date == yesterday) {
+        return 'Yesterday';
+    }
+    return date;
 }
-// function to directly get data from it like an array
-function table(entries, col, row) {
-    return entries.filter(function (entry) {
-        return entry['col'] == col.toString() && entry['row'] == row.toString();
-    })[0]['value'];
+function addCanteen(time, canteen, meals) {
+    var sections = document.getElementsByTagName('section');
+    for (var section in sections) {
+        if (typeof sections[section] == 'object') {
+            sections[section].innerHTML +=
+                '<div class=canteen-card><span class=canteen-name>' +
+                    canteen +
+                    '</span><br /><span class=timestamp>' +
+                    time +
+                    '</span><br /><br/><span class=menu>' +
+                    meals[section] +
+                    '</span></div>';
+        }
+    }
 }
 //moving to section according to time
 function move() {
@@ -118,39 +117,4 @@ function setToReload() {
     setTimeout(function () {
         history.go();
     }, milliSecsToWait);
-}
-// Dark theme handling
-var theme = localStorage.getItem('theme');
-if (theme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-}
-var userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
-if (theme === 'dark') {
-    document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-light.svg">';
-}
-else if (theme === 'light') {
-    document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-dark.svg">';
-}
-else if (userPrefers === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    window.localStorage.setItem('theme', 'dark');
-    document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-light.svg">';
-}
-else {
-    document.documentElement.setAttribute('data-theme', 'light');
-    window.localStorage.setItem('theme', 'light');
-    document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-dark.svg">';
-}
-function modeSwitcher() {
-    var currentMode = document.documentElement.getAttribute('data-theme');
-    if (currentMode === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'light');
-        window.localStorage.setItem('theme', 'light');
-        document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-dark.svg">';
-    }
-    else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        window.localStorage.setItem('theme', 'dark');
-        document.getElementById('theme-toggle').innerHTML = '<img src="./static/icons/theme-toggle-light.svg">';
-    }
 }
