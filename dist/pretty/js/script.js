@@ -12,18 +12,18 @@ request.send();
 request.onload = function (e) {
     if (request.readyState === 4) {
         if (request.status === 200) {
+            var response = request.responseText;
             var lines = request.responseText.split("\r");
             for (var _i = 0, _a = lines.slice(1); _i < _a.length; _i++) {
                 var line = _a[_i];
-                // Parsing the mess of a CSV file
-                var rows = line.split("\",\"");
-                var time = rows[0].split(",")[0].replace("\"", "").replace("\n", "").split(" ");
+                var line_json = CSVtoArray(line);
+                var time = line_json[0].split(" ");
                 time = make_date_friendly(time[0]) + " " + time[1];
-                var canteen = rows[0].split(",")[1].replace("\"", "");
-                var breakfast = String(rows[0].split(",").slice(2)).replace("\"", "");
-                var lunch = rows[1].replace("\"", "");
-                var snacks = rows[2].replace("\"", "");
-                var dinner = rows[3].replace("\"", "");
+                var canteen = line_json[1];
+                var breakfast = line_json[2];
+                var lunch = line_json[3];
+                var snacks = line_json[4];
+                var dinner = line_json[5];
                 addCanteen(time, canteen, [breakfast, lunch, snacks, dinner]);
             }
             // moving to the relevant meal
@@ -36,6 +36,30 @@ request.onload = function (e) {
         }
     }
 };
+function CSVtoArray(text) {
+    var re_valid = /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
+    var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
+    // Return NULL if input string is not well formed CSV string.
+    if (!re_valid.test(text))
+        return null;
+    var a = []; // Initialize array to receive values.
+    text.replace(re_value, function (m0, m1, m2, m3) {
+        // Remove backslash from \' in single quoted values.
+        if (m1 !== undefined)
+            a.push(m1.replace(/\\'/g, "'"));
+        // Remove backslash from \" in double quoted values.
+        else if (m2 !== undefined)
+            a.push(m2.replace(/\\"/g, '"'));
+        else if (m3 !== undefined)
+            a.push(m3);
+        return ''; // Return empty string.
+    });
+    // Handle special case of empty last value.
+    if (/,\s*$/.test(text))
+        a.push('');
+    return a;
+}
+;
 function make_date_friendly(date) {
     var now = new Date();
     var today = (now.getMonth() + 1).toString() +
@@ -58,6 +82,10 @@ function make_date_friendly(date) {
     return date;
 }
 function addCanteen(time, canteen, meals) {
+    if (loading) {
+        document.querySelector("#skeleton").classList.add("hide");
+        loading = false;
+    }
     var sections = document.getElementsByTagName('section');
     for (var section in sections) {
         if (typeof sections[section] == 'object') {

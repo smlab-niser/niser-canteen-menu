@@ -345,7 +345,7 @@ template {
   font-family: 'Fira Sans';
   font-style: normal;
   font-weight: 400;
-  src: url(../static/fonts/FiraSans-Regular.otf);
+  src: url(../static/FiraSans-Regular.otf);
 }
 
 html {
@@ -456,6 +456,10 @@ section {
   font-size: 20px;
   font-weight: 500;
   font-style: normal;
+}
+
+.hide {
+  display: none;
 }
 
 /* footer */

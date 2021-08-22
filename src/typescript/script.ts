@@ -5,27 +5,25 @@ if(window.XMLHttpRequest){
 }else{
   request = new ActiveXObject("Microsoft.XMLHTTP");
 }
-const loading = true;
+var loading = true;
 request.open('GET', csvLink, true);
 request.send();
 request.onload = function (e) {
   if (request.readyState === 4) {
     if (request.status === 200) {
+      const response: string= request.responseText;
       const lines = request.responseText.split("\r");
       for (const line of lines.slice(1)) {
-        // Parsing the mess of a CSV file
-        const rows = line.split("\",\"");
-        var time = rows[0].split(",")[0].replace("\"", "").replace("\n", "").split(" ");
+        const line_json = CSVtoArray(line);
+        var time = line_json[0].split(" ");
         time = make_date_friendly(time[0]) + " " + time[1];
-        const canteen = rows[0].split(",")[1].replace("\"", "");
-        const breakfast = String(rows[0].split(",").slice(2)).replace("\"", "");
-        const lunch = rows[1].replace("\"", "");
-        const snacks = rows[2].replace("\"", "");
-        const dinner = rows[3].replace("\"", "");
-
+        const canteen = line_json[1];
+        const breakfast = line_json[2];
+        const lunch = line_json[3];
+        const snacks = line_json[4];
+        const dinner = line_json[5];
         addCanteen(time, canteen, [breakfast, lunch, snacks, dinner]);
       }
-
       // moving to the relevant meal
       move();
       // set to reload after a certain amount of time
@@ -34,6 +32,30 @@ request.onload = function (e) {
       console.error(request.statusText);
     }
   }
+};
+
+function CSVtoArray(text: string) {
+  var re_valid = /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
+  var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
+
+  // Return NULL if input string is not well formed CSV string.
+  if (!re_valid.test(text)) return null;
+
+  var a = []; // Initialize array to receive values.
+  text.replace(re_value, function(m0, m1, m2, m3) {
+
+    // Remove backslash from \' in single quoted values.
+    if (m1 !== undefined) a.push(m1.replace(/\\'/g, "'"));
+
+    // Remove backslash from \" in double quoted values.
+    else if (m2 !== undefined) a.push(m2.replace(/\\"/g, '"'));
+    else if (m3 !== undefined) a.push(m3);
+    return ''; // Return empty string.
+  });
+
+  // Handle special case of empty last value.
+  if (/,\s*$/.test(text)) a.push('');
+  return a;
 };
 
 function make_date_friendly(date: string) {
@@ -60,6 +82,10 @@ function make_date_friendly(date: string) {
 }
 
 function addCanteen(time: String, canteen: String, meals: String[]) {
+  if (loading) {
+    document.querySelector("#skeleton").classList.add("hide");
+    loading = false;
+  }
   var sections = document.getElementsByTagName('section');
   for (let section in sections) {
     if (typeof sections[section] == 'object') {

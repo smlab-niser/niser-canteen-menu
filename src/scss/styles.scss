@@ -4,7 +4,7 @@
   font-family: 'Fira Sans';
   font-style: normal;
   font-weight: 400;
-  src: url(../static/fonts/FiraSans-Regular.otf);
+  src: url(../static/FiraSans-Regular.otf);
 }
 html{
   --main-background-color: linear-gradient(147deg, #282a36 0%, #383a59 74%);
@@ -109,12 +109,16 @@ section {
   font-weight: 500;
   font-style: normal;
 }
+.hide {
+  display: none;
+}
 
-  /* footer */
-  footer {
+/* footer */
+footer {
+  color: var(--footer-color);
+  margin-bottom: 10px;
+  a {
     color: var(--footer-color);
-    margin-bottom: 10px;
-    a {
-      color: var(--footer-color);
-    }
   }
+}
+
