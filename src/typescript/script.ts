@@ -1,17 +1,18 @@
-const csvLink = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpgPFjsVbVak8MuXxOYEV8ezmsXC38Ki13xHcGwVt3YbFRoRSKwiRemMk9lCGOKRsDCrlYtD2ePg7V/pub?output=csv';
+const csvLink =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSpgPFjsVbVak8MuXxOYEV8ezmsXC38Ki13xHcGwVt3YbFRoRSKwiRemMk9lCGOKRsDCrlYtD2ePg7V/pub?output=csv";
 var request: any;
-if(window.XMLHttpRequest){
+if (window.XMLHttpRequest) {
   request = new XMLHttpRequest();
-}else{
+} else {
   request = new ActiveXObject("Microsoft.XMLHTTP");
 }
 var loading = true;
-request.open('GET', csvLink, true);
+request.open("GET", csvLink, true);
 request.send();
 request.onload = function (e) {
   if (request.readyState === 4) {
     if (request.status === 200) {
-      const response: string= request.responseText;
+      const response: string = request.responseText;
       const lines = request.responseText.split("\r");
       for (const line of lines.slice(1)) {
         const line_json = CSVtoArray(line);
@@ -35,48 +36,48 @@ request.onload = function (e) {
 };
 
 function CSVtoArray(text: string) {
-  var re_valid = /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
-  var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
+  var re_valid =
+    /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
+  var re_value =
+    /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
 
   // Return NULL if input string is not well formed CSV string.
   if (!re_valid.test(text)) return null;
 
   var a = []; // Initialize array to receive values.
-  text.replace(re_value, function(m0, m1, m2, m3) {
-
+  text.replace(re_value, function (m0, m1, m2, m3) {
     // Remove backslash from \' in single quoted values.
     if (m1 !== undefined) a.push(m1.replace(/\\'/g, "'"));
-
     // Remove backslash from \" in double quoted values.
     else if (m2 !== undefined) a.push(m2.replace(/\\"/g, '"'));
     else if (m3 !== undefined) a.push(m3);
-    return ''; // Return empty string.
+    return ""; // Return empty string.
   });
 
   // Handle special case of empty last value.
-  if (/,\s*$/.test(text)) a.push('');
+  if (/,\s*$/.test(text)) a.push("");
   return a;
-};
+}
 
 function make_date_friendly(date: string) {
   var now = new Date();
   var today =
     (now.getMonth() + 1).toString() +
-    '/' +
+    "/" +
     now.getDate().toString() +
-    '/' +
+    "/" +
     now.getFullYear().toString();
   now.setDate(now.getDate() - 1); // going a day back
   var yesterday =
     (now.getMonth() + 1).toString() +
-    '/' +
+    "/" +
     now.getDate().toString() +
-    '/' +
+    "/" +
     now.getFullYear().toString();
   if (date == today) {
-    return 'Today';
+    return "Today";
   } else if (date == yesterday) {
-    return 'Yesterday';
+    return "Yesterday";
   }
   return date;
 }
@@ -86,17 +87,28 @@ function addCanteen(time: String, canteen: String, meals: String[]) {
     document.querySelector("#skeleton").classList.add("hide");
     loading = false;
   }
-  var sections = document.getElementsByTagName('section');
+  var sections = document.getElementsByTagName("section");
   for (let section in sections) {
-    if (typeof sections[section] == 'object') {
-      sections[section].innerHTML +=
-        '<div class=canteen-card><span class=canteen-name>' +
-        canteen +
-        '</span><br /><span class=timestamp>' +
-        time +
-        '</span><br /><br/><span class=menu>' +
-        meals[section] +
-        '</span></div>';
+    if (typeof sections[section] == "object") {
+      if (canteen == "Kaveri") {
+        sections[section].innerHTML +=
+          "<div class=canteen-card><div class=card-head><span class=canteen-name>" +
+          canteen +
+          "</span><a class=feedback href='https://google.com' target=__blank>Feedback</a></div><span class=timestamp>" +
+          time +
+          "</span><br /><br/><span class=menu>" +
+          meals[section] +
+          "</span></div>";
+      } else {
+        sections[section].innerHTML +=
+          "<div class=canteen-card><span class=canteen-name>" +
+          canteen +
+          "</span><br /><span class=timestamp>" +
+          time +
+          "</span><br /><br/><span class=menu>" +
+          meals[section] +
+          "</span></div>";
+      }
     }
   }
 }
@@ -105,7 +117,7 @@ function addCanteen(time: String, canteen: String, meals: String[]) {
 function move() {
   var hours: number = new Date().getHours();
   var section_no: number = 0;
-  var sections = document.getElementsByTagName('section');
+  var sections = document.getElementsByTagName("section");
 
   if (hours >= 22 || hours < 10) {
     // breakfast case
@@ -120,11 +132,11 @@ function move() {
     section_no = 3;
   }
 
-  var location = '-' + section_no.toString() + '00vw';
-  sections[0].style['margin-left'] = location;
-  sections[1].style['margin-left'] = location;
-  sections[2].style['margin-left'] = location;
-  sections[3].style['margin-left'] = location;
+  var location = "-" + section_no.toString() + "00vw";
+  sections[0].style["margin-left"] = location;
+  sections[1].style["margin-left"] = location;
+  sections[2].style["margin-left"] = location;
+  sections[3].style["margin-left"] = location;
 }
 
 // function to reload on appropriate times
