@@ -1,4 +1,5 @@
 var csvLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSpgPFjsVbVak8MuXxOYEV8ezmsXC38Ki13xHcGwVt3YbFRoRSKwiRemMk9lCGOKRsDCrlYtD2ePg7V/pub?output=csv";
+var kaveri_form_link = "https://docs.google.com/forms/d/e/1FAIpQLSerO8nzg2LGAQbuBf4Eoz_te1oJZ8Qkzo_zXc1cYswwQ0oh1g/viewform?usp=sf_link";
 var request;
 if (window.XMLHttpRequest) {
     request = new XMLHttpRequest();
@@ -92,7 +93,9 @@ function addCanteen(time, canteen, meals) {
                 sections[section].innerHTML +=
                     "<div class=canteen-card><div class=card-head><span class=canteen-name>" +
                         canteen +
-                        "</span><a class=feedback href='https://google.com' target=__blank>Feedback</a></div><span class=timestamp>" +
+                        "</span><a class=feedback href='" +
+                        kaveri_form_link +
+                        "' target=__blank>Feedback</a></div><span class=timestamp>" +
                         time +
                         "</span><br /><br/><span class=menu>" +
                         meals[section] +

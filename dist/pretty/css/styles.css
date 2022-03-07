@@ -440,11 +440,11 @@ section {
 
 .feedback {
   padding: 9px 12px;
-  background: var(--main-background-color);
-  border-radius: 2px;
   color: var(--menu-color);
   text-decoration: none;
   margin: auto 10px 11px auto;
+  border: solid 2.5px var(--main-background-color);
+  border-radius: 7px;
 }
 
 .timestamp {
