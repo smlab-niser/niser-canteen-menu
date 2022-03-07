@@ -88,12 +88,13 @@ section {
   letter-spacing: 0.097em;
   font-weight: 700;
   font-style: normal;
+  height: 34.4px;
 }
 .feedback {
   padding: 9px 12px;
   color: var(--menu-color);
   text-decoration: none;
-  margin: auto 10px 11px auto;
+  margin: auto 10px -1px auto;
   border: solid 2.5px var(--main-background-color);
   border-radius: 7px;
 }
