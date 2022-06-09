@@ -1,5 +1,7 @@
 var csvLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSpgPFjsVbVak8MuXxOYEV8ezmsXC38Ki13xHcGwVt3YbFRoRSKwiRemMk9lCGOKRsDCrlYtD2ePg7V/pub?output=csv";
 var kaveri_form_link = "https://docs.google.com/forms/d/e/1FAIpQLSerO8nzg2LGAQbuBf4Eoz_te1oJZ8Qkzo_zXc1cYswwQ0oh1g/viewform?usp=sf_link";
+var mahanadi_form_link = "https://docs.google.com/forms/d/e/1FAIpQLSdciZNQC1z_hSjiYp_V1V2HHUQHYWcG0qAvp6546j7ttCDNlQ/viewform?usp=sf_link";
+var rushikulya_form_link = "https://docs.google.com/forms/d/e/1FAIpQLSddThe2b9zj5M-kjTfNRBriIgibh_yN1HIBMU07i4mtTNhRaA/viewform?usp=sf_link";
 var request;
 if (window.XMLHttpRequest) {
     request = new XMLHttpRequest();
@@ -89,28 +91,28 @@ function addCanteen(time, canteen, meals) {
     var sections = document.getElementsByTagName("section");
     for (var section in sections) {
         if (typeof sections[section] == "object") {
-            if (canteen == "Kaveri") {
-                sections[section].innerHTML +=
-                    "<div class=canteen-card><div class=card-head><span class=canteen-name>" +
-                        canteen +
-                        "</span><a class=feedback href='" +
-                        kaveri_form_link +
-                        "' target=__blank>Feedback</a></div><span class=timestamp>" +
-                        time +
-                        "</span><br /><br/><span class=menu>" +
-                        meals[section] +
-                        "</span></div>";
+            var canteen_review_link = "";
+            switch (canteen) {
+                case "Kaveri":
+                    canteen_review_link = kaveri_form_link;
+                    break;
+                case "Mahanadi":
+                    canteen_review_link = mahanadi_form_link;
+                    break;
+                case "Rushikulya":
+                    canteen_review_link = rushikulya_form_link;
+                    break;
             }
-            else {
-                sections[section].innerHTML +=
-                    "<div class=canteen-card><span class=canteen-name>" +
-                        canteen +
-                        "</span><br /><span class=timestamp>" +
-                        time +
-                        "</span><br /><br/><span class=menu>" +
-                        meals[section] +
-                        "</span></div>";
-            }
+            sections[section].innerHTML +=
+                "<div class=canteen-card><div class=card-head><span class=canteen-name>" +
+                    canteen +
+                    "</span><a class=feedback href='" +
+                    canteen_review_link +
+                    "' target=__blank>Feedback</a></div><span class=timestamp>" +
+                    time +
+                    "</span><br /><br/><span class=menu>" +
+                    meals[section] +
+                    "</span></div>";
         }
     }
 }
