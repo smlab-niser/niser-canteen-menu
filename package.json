@@ -1,9 +1,9 @@
 {
   "name": "niser-canteen-menu",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Canteen menu website for NISER canteens",
   "scripts": {
-    "build": "sass ./src/scss/styles.scss ./dist/css/styles.css && tsc ./src/typescript/script.ts --outFile ./dist/js/script.js && cp ./src/static/* ./dist/pretty/static/ && cp ./src/index.html ./dist/pretty/index.html"
+    "build": "sass ./src/scss/styles.scss ./dist/css/styles.css && tsc ./src/typescript/script_v200.ts --outFile ./dist/js/script_v200.js && cp ./src/static/* ./dist/pretty/static/ && cp ./src/index.html ./dist/pretty/index.html"
   },
   "repository": {
     "type": "git",
